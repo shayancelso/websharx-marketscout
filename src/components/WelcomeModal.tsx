@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Map, Users, Target, Diamond, ArrowRight, X } from 'lucide-react';
+import { Map, Users, Target, ArrowRight, X } from 'lucide-react';
 
 interface WelcomeModalProps {
   onClose: () => void;
@@ -8,7 +8,7 @@ interface WelcomeModalProps {
 
 const steps = [
   {
-    icon: <Diamond className="h-10 w-10 text-teal" />,
+    icon: <img src="/websharx-logo-colour.png" alt="Web Sharx" className="h-10" />,
     title: 'Welcome to MarketScout',
     description: 'Your intelligent market intelligence platform for Web Sharx\'s US expansion. Discover where to advertise, who to target, and how to maximise ROI.',
   },

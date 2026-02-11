@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Home, Map, Users, Target, HelpCircle, Menu, X, Diamond } from 'lucide-react';
+import { Home, Map, Users, Target, HelpCircle, Menu, X } from 'lucide-react';
 import { MarketScout } from './components/MarketScout';
 import { ProspectGenerator } from './components/ProspectGenerator';
 import { AdFocusPlanner } from './components/AdFocusPlanner';
@@ -51,11 +51,8 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentPage('home')}>
-              <div className="w-8 h-8 bg-teal rounded-sm flex items-center justify-center rotate-45">
-                <Diamond className="h-4 w-4 text-white -rotate-45" />
-              </div>
+              <img src="/websharx-logo-blue.png" alt="Web Sharx" className="h-8" />
               <div className="flex items-baseline gap-1.5">
-                <span className="font-bold text-navy text-lg">Web Sharx</span>
                 <span className="text-sm text-gray-400">/</span>
                 <span className="text-sm font-medium text-teal">MarketScout</span>
               </div>

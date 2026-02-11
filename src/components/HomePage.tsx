@@ -31,6 +31,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
       {/* Hero */}
       <div className="bg-gradient-to-br from-navy via-[#244b6e] to-teal text-white py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
+          <img src="/websharx-logo.png" alt="Web Sharx" className="h-10 mx-auto mb-4" />
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">MarketScout</h1>
           <p className="text-lg text-white/80 max-w-2xl mx-auto">
             Your intelligent market intelligence platform for US expansion. Discover where to advertise, who to target, and how to maximise your return on investment.
