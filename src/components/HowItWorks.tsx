@@ -52,14 +52,14 @@ export function HowItWorks({ page, onClose }: { page: string; onClose: () => voi
   const info = pageInfo[page] || pageInfo.home;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full">
-        <div className="flex items-center justify-between p-4 border-b">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-sm p-4">
+      <div className="glass-card-static max-w-md w-full" style={{ background: 'rgba(255,255,255,0.88)' }}>
+        <div className="flex items-center justify-between p-5 border-b border-[#1d1d1f]/6">
           <div className="flex items-center gap-3">
             {info.icon}
-            <h2 className="font-bold text-navy">{info.title}</h2>
+            <h2 className="font-semibold text-[#1d1d1f]">{info.title}</h2>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="text-[#86868b] hover:text-[#1d1d1f] transition-colors">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -67,27 +67,26 @@ export function HowItWorks({ page, onClose }: { page: string; onClose: () => voi
           <ol className="space-y-4">
             {info.steps.map((step, i) => (
               <li key={i} className="flex items-start gap-3">
-                <span className="w-6 h-6 rounded-full bg-teal/10 text-teal text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                <span className="w-6 h-6 rounded-full bg-[#1d1d1f]/5 text-[#86868b] text-xs font-semibold flex items-center justify-center shrink-0 mt-0.5">
                   {i + 1}
                 </span>
-                <p className="text-sm text-gray-600 leading-relaxed">{step}</p>
+                <p className="text-sm text-[#86868b] leading-relaxed">{step}</p>
               </li>
             ))}
           </ol>
 
-          {/* Pipeline reminder */}
-          <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-center gap-2 text-xs text-gray-400">
-            <span className="px-2 py-1 bg-teal/10 text-teal rounded font-medium">1. Scout</span>
-            <ArrowRight className="h-3 w-3" />
-            <span className="px-2 py-1 bg-teal/10 text-teal rounded font-medium">2. Prospects</span>
-            <ArrowRight className="h-3 w-3" />
-            <span className="px-2 py-1 bg-teal/10 text-teal rounded font-medium">3. Campaign</span>
+          <div className="mt-5 pt-5 border-t border-[#1d1d1f]/6 flex items-center justify-center gap-2 text-xs text-[#86868b]">
+            <span className="pill-badge">1. Scout</span>
+            <ArrowRight className="h-3 w-3 opacity-40" />
+            <span className="pill-badge">2. Prospects</span>
+            <ArrowRight className="h-3 w-3 opacity-40" />
+            <span className="pill-badge">3. Campaign</span>
           </div>
         </div>
         <div className="px-6 pb-6">
           <button
             onClick={onClose}
-            className="w-full px-4 py-2.5 bg-teal text-white rounded-lg text-sm font-medium hover:bg-teal-light transition-colors"
+            className="w-full px-5 py-2.5 bg-[#1d1d1f] text-white rounded-full text-sm font-medium hover:bg-[#1d1d1f]/85 transition-colors"
           >
             Got It
           </button>

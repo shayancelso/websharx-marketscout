@@ -1,21 +1,193 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: #1e3a5f;
+  --color-navy: #1d1d1f;
   --color-teal: #2d6a7a;
   --color-teal-light: #3a8a9e;
-  --color-slate-bg: #f8fafc;
-  --color-card-border: #e2e8f0;
+  --color-slate-bg: #f5f7fa;
+  --color-card-border: rgba(255, 255, 255, 0.5);
+  --color-muted: #86868b;
+  --color-subtle-border: rgba(0, 0, 0, 0.06);
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 50%, #f0e6ef 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #1d1d1f;
 }
 
+/* Glass card base */
+.glass-card {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 12px 40px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 16px 48px rgba(0, 0, 0, 0.08);
+}
+
+.glass-card-static {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 12px 40px rgba(0, 0, 0, 0.06);
+}
+
+/* Glass nav */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Grade badges - soft tints */
+.grade-a { background: rgba(52, 199, 89, 0.12); color: #248a3d; }
+.grade-b { background: rgba(0, 122, 255, 0.12); color: #0055d4; }
+.grade-c { background: rgba(255, 159, 10, 0.12); color: #c77800; }
+.grade-d { background: rgba(255, 69, 58, 0.12); color: #d70015; }
+
+/* Pill badge */
+.pill-badge {
+  background: rgba(0, 0, 0, 0.06);
+  backdrop-filter: blur(8px);
+  border-radius: 100px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Leaflet overrides */
 .leaflet-container {
   height: 100%;
   width: 100%;
-  border-radius: 0.5rem;
+  border-radius: 0 0 20px 20px;
+}
+
+.leaflet-popup-content-wrapper {
+  background: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.88) !important;
+}
+
+/* Smooth page transitions */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeSlideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* Count up animation helper */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Table rows - no grid lines, alternating */
+.glass-table tbody tr {
+  border: none;
+}
+
+.glass-table tbody tr:nth-child(even) {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.glass-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.glass-table thead {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.glass-table thead th {
+  border: none;
+  font-weight: 500;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #86868b;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Score ring */
+.score-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-ring svg {
+  transform: rotate(-90deg);
+}
+
+/* Recharts overrides */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(0, 0, 0, 0.06) !important;
+}
+
+.recharts-text {
+  fill: #86868b !important;
+  font-size: 11px !important;
 }

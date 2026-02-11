@@ -1,4 +1,4 @@
-import { Map, Users, Target, ChevronRight } from 'lucide-react';
+import { Map, Users, Target } from 'lucide-react';
 
 interface PhaseStepperProps {
   currentPhase: string;
@@ -9,20 +9,20 @@ interface PhaseStepperProps {
 }
 
 const phases = [
-  { id: 'phase-1', label: 'Scout Markets', icon: <Map className="h-4 w-4" />, number: 1 },
-  { id: 'phase-2', label: 'Find Prospects', icon: <Users className="h-4 w-4" />, number: 2 },
-  { id: 'phase-3', label: 'Plan Campaign', icon: <Target className="h-4 w-4" />, number: 3 },
+  { id: 'phase-1', label: 'Scout Markets', icon: <Map className="h-3.5 w-3.5" />, number: 1 },
+  { id: 'phase-2', label: 'Find Prospects', icon: <Users className="h-3.5 w-3.5" />, number: 2 },
+  { id: 'phase-3', label: 'Plan Campaign', icon: <Target className="h-3.5 w-3.5" />, number: 3 },
 ];
 
 export function PhaseStepper({ currentPhase, onNavigate, marketCount, prospectCount, selectedProspectCount }: PhaseStepperProps) {
   const getBadge = (id: string) => {
     switch (id) {
       case 'phase-1':
-        return marketCount > 0 ? `${marketCount} selected` : null;
+        return marketCount > 0 ? `${marketCount}` : null;
       case 'phase-2':
-        return prospectCount > 0 ? `${prospectCount} found` : null;
+        return prospectCount > 0 ? `${prospectCount}` : null;
       case 'phase-3':
-        return selectedProspectCount > 0 ? 'Ready' : null;
+        return selectedProspectCount > 0 ? '✓' : null;
       default:
         return null;
     }
@@ -38,48 +38,42 @@ export function PhaseStepper({ currentPhase, onNavigate, marketCount, prospectCo
   };
 
   return (
-    <div className="border-t border-card-border bg-gray-50/80">
+    <div className="border-t border-[#1d1d1f]/6">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-center py-2.5 gap-1 sm:gap-2 overflow-x-auto">
-          {phases.map((phase, i) => {
-            const state = getStepState(phase.id);
-            const badge = getBadge(phase.id);
-            return (
-              <div key={phase.id} className="flex items-center gap-1 sm:gap-2 shrink-0">
-                {i > 0 && <ChevronRight className="h-4 w-4 text-gray-300 shrink-0" />}
+        {/* iOS-style segmented control */}
+        <div className="flex items-center justify-center py-3">
+          <div className="inline-flex items-center bg-[#1d1d1f]/5 rounded-full p-1 gap-0.5">
+            {phases.map((phase) => {
+              const state = getStepState(phase.id);
+              const badge = getBadge(phase.id);
+              return (
                 <button
+                  key={phase.id}
                   onClick={() => onNavigate(phase.id)}
-                  className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 ${
                     state === 'active'
-                      ? 'bg-teal text-white shadow-sm'
+                      ? 'bg-white text-[#1d1d1f] shadow-sm shadow-black/8'
                       : state === 'completed'
-                      ? 'bg-teal/10 text-teal hover:bg-teal/20'
-                      : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                      ? 'text-teal hover:bg-white/50'
+                      : 'text-[#86868b] hover:text-[#1d1d1f]'
                   }`}
                 >
-                  <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
-                    state === 'active'
-                      ? 'bg-white/20 text-white'
-                      : state === 'completed'
-                      ? 'bg-teal/20 text-teal'
-                      : 'bg-gray-200 text-gray-400'
-                  }`}>
-                    {phase.number}
-                  </span>
+                  {phase.icon}
                   <span className="hidden sm:inline">{phase.label}</span>
+                  <span className="sm:hidden">{phase.number}</span>
                   {badge && (
-                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                    <span className={`min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold ${
                       state === 'active'
-                        ? 'bg-white/20 text-white'
+                        ? 'bg-teal/12 text-teal'
                         : 'bg-teal/10 text-teal'
                     }`}>
                       {badge}
                     </span>
                   )}
                 </button>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

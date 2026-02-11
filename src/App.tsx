@@ -25,7 +25,6 @@ function App() {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Pipeline state — flows between phases
   const [selectedMarketIds, setSelectedMarketIds] = useState<Set<string>>(new Set());
   const [selectedProspectIds, setSelectedProspectIds] = useState<Set<string>>(new Set());
   const [monthlyBudget, setMonthlyBudget] = useState(5000);
@@ -56,7 +55,6 @@ function App() {
     });
   };
 
-  // Prospects available in selected markets
   const availableProspects = prospects.filter((p) => selectedMarketIds.has(p.marketId));
   const selectedProspects = prospects.filter((p) => selectedProspectIds.has(p.id));
 
@@ -97,16 +95,16 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-bg flex flex-col">
-      {/* Nav */}
-      <header className="bg-white border-b border-card-border sticky top-0 z-50">
+    <div className="min-h-screen flex flex-col">
+      {/* Frosted glass nav */}
+      <header className="glass-nav sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentPage('home')}>
+            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentPage('home')}>
               <img src="/websharx-logo-blue.png" alt="Web Sharx" className="h-8" />
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-sm text-gray-400">/</span>
-                <span className="text-sm font-medium text-teal">MarketScout</span>
+              <div className="flex items-baseline gap-2">
+                <span className="text-sm text-[#86868b]">/</span>
+                <span className="text-sm font-medium text-[#1d1d1f]">MarketScout</span>
               </div>
             </div>
 
@@ -116,10 +114,10 @@ function App() {
                 <button
                   key={item.id}
                   onClick={() => setCurrentPage(item.id)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
                     currentPage === item.id
-                      ? 'bg-teal/10 text-teal'
-                      : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                      ? 'bg-[#1d1d1f]/8 text-[#1d1d1f]'
+                      : 'text-[#86868b] hover:text-[#1d1d1f] hover:bg-[#1d1d1f]/4'
                   }`}
                   title={item.label}
                 >
@@ -127,10 +125,10 @@ function App() {
                   <span className="hidden lg:inline">{item.label}</span>
                 </button>
               ))}
-              <div className="w-px h-8 bg-gray-200 mx-2" />
+              <div className="w-px h-6 bg-[#1d1d1f]/8 mx-2" />
               <button
                 onClick={() => setShowHowItWorks(true)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-teal hover:bg-teal/5 transition-colors"
+                className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-sm font-medium text-[#86868b] hover:text-[#1d1d1f] hover:bg-[#1d1d1f]/4 transition-all duration-200"
               >
                 <HelpCircle className="h-4 w-4" />
                 <span className="hidden lg:inline">How It Works</span>
@@ -139,7 +137,7 @@ function App() {
 
             {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-50"
+              className="md:hidden p-2 rounded-full text-[#86868b] hover:bg-[#1d1d1f]/4 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -149,13 +147,13 @@ function App() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-card-border bg-white px-4 py-3 space-y-1">
+          <div className="md:hidden border-t border-[#1d1d1f]/6 px-4 py-3 space-y-1">
             {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => { setCurrentPage(item.id); setMobileMenuOpen(false); }}
-                className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  currentPage === item.id ? 'bg-teal/10 text-teal' : 'text-gray-600 hover:bg-gray-50'
+                className={`flex items-center gap-3 w-full px-4 py-2.5 rounded-2xl text-sm font-medium transition-all duration-200 ${
+                  currentPage === item.id ? 'bg-[#1d1d1f]/8 text-[#1d1d1f]' : 'text-[#86868b] hover:bg-[#1d1d1f]/4'
                 }`}
               >
                 {item.icon}
@@ -164,14 +162,14 @@ function App() {
             ))}
             <button
               onClick={() => { setShowHowItWorks(true); setMobileMenuOpen(false); }}
-              className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50"
+              className="flex items-center gap-3 w-full px-4 py-2.5 rounded-2xl text-sm font-medium text-[#86868b] hover:bg-[#1d1d1f]/4"
             >
               <HelpCircle className="h-5 w-5" /> How It Works
             </button>
           </div>
         )}
 
-        {/* Phase Stepper — only on phase pages */}
+        {/* Phase Stepper */}
         {currentPage !== 'home' && (
           <PhaseStepper
             currentPhase={currentPage}
@@ -184,11 +182,11 @@ function App() {
       </header>
 
       {/* Content */}
-      <main className="flex-1">{renderPage()}</main>
+      <main className="flex-1 animate-fade-in" key={currentPage}>{renderPage()}</main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-card-border py-4 px-4">
-        <p className="text-xs text-gray-400 text-center">
+      <footer className="py-6 px-4">
+        <p className="text-xs text-[#86868b] text-center">
           © 2026 Web Sharx. All rights reserved. Proof of concept prototype by{' '}
           <a href="https://buildwithgloo.com" target="_blank" rel="noopener noreferrer" className="text-teal hover:underline">
             Gloo Labs Inc.
