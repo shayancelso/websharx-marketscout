@@ -1,47 +1,49 @@
-import { X, Map, Users, Target, Home } from 'lucide-react';
+import { X, Map, Users, Target, Home, ArrowRight } from 'lucide-react';
 
 const pageInfo: Record<string, { title: string; icon: React.ReactNode; steps: string[] }> = {
   home: {
-    title: 'Home',
+    title: 'How MarketScout Works',
     icon: <Home className="h-6 w-6 text-teal" />,
     steps: [
-      'MarketScout is your intelligent market intelligence platform for US expansion.',
-      'Navigate between three modules using the top navigation bar.',
-      'Each module provides actionable insights for market entry strategy.',
+      'MarketScout is a guided 3-phase pipeline for US market expansion.',
+      'Phase 1: Scout Markets — Select target US markets based on AI-scored opportunity analysis.',
+      'Phase 2: Find Prospects — Discover matching businesses in your selected markets.',
+      'Phase 3: Plan Campaign — Allocate ad spend and generate personalised outreach.',
+      'Each phase feeds into the next. Selections carry forward through the pipeline.',
       'All data shown is simulated for demonstration purposes.',
     ],
   },
-  'market-scout': {
-    title: 'Market Scout',
+  'phase-1': {
+    title: 'Phase 1: Market Scout',
     icon: <Map className="h-6 w-6 text-teal" />,
     steps: [
-      'The interactive map displays US metro areas sized and coloured by opportunity score.',
-      'Click any marker to view detailed market analysis including AI-powered insights.',
+      'The interactive map displays US metro areas sized and coloured by AI-generated opportunity score.',
       'Scores are based on business density, digital maturity gap, agency competition, and growth rate.',
-      'The rankings table below the map allows quick comparison across all markets.',
-      'Grade A markets are recommended for immediate entry; Grade B for secondary focus.',
+      'Click any marker to view detailed market analysis including AI-powered insights.',
+      'Use "Add to Plan" to select markets — these carry forward to Phase 2 and Phase 3.',
+      'The rankings table allows quick comparison. Grade A markets are recommended for immediate entry.',
     ],
   },
-  prospects: {
-    title: 'Prospect Generator',
+  'phase-2': {
+    title: 'Phase 2: Prospect Generator',
     icon: <Users className="h-6 w-6 text-teal" />,
     steps: [
-      'Prospects are scored against the British Swim School "ideal client" benchmark.',
-      'Higher match scores indicate businesses most similar to your best client profile.',
-      'Lower digital scores indicate more opportunity — these businesses need the most help.',
-      'Use filters to narrow by industry, location, or minimum match score.',
-      'Click any prospect for detailed digital gap analysis and service recommendations.',
+      'Only shows prospects within markets you selected in Phase 1.',
+      'Prospects are scored against the British Swim School "ideal client" benchmark using AI.',
+      'Lower digital scores = more opportunity (these businesses need the most help).',
+      'Use filters to narrow by industry or minimum match score.',
+      'Select prospects for outreach — these carry forward to Phase 3\'s direct outreach section.',
     ],
   },
-  'ad-planner': {
-    title: 'Ad Focus Planner',
+  'phase-3': {
+    title: 'Phase 3: Campaign Planner',
     icon: <Target className="h-6 w-6 text-teal" />,
     steps: [
-      'Budget allocation is optimised based on market opportunity scores and cost efficiency.',
-      'Cost per lead estimates vary by market competition and channel.',
-      'ROI projections factor in average project values and conversion rates per market.',
-      'Channel recommendations prioritise the most effective platforms for each market.',
-      'Adjust total budget to see how allocation shifts across markets.',
+      '3A: Ad Spend — Enter your monthly budget and AI allocates across selected markets.',
+      'Allocation is based on opportunity scores, estimated CPL, and channel effectiveness.',
+      'Adjust the budget to see projected leads and ROI change dynamically.',
+      '3B: Direct Outreach — AI generates personalised emails for each selected prospect.',
+      'Outreach messages highlight specific digital gaps and recommend relevant services.',
     ],
   },
 };
@@ -55,7 +57,7 @@ export function HowItWorks({ page, onClose }: { page: string; onClose: () => voi
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-3">
             {info.icon}
-            <h2 className="font-bold text-navy">How It Works — {info.title}</h2>
+            <h2 className="font-bold text-navy">{info.title}</h2>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
             <X className="h-5 w-5" />
@@ -72,6 +74,15 @@ export function HowItWorks({ page, onClose }: { page: string; onClose: () => voi
               </li>
             ))}
           </ol>
+
+          {/* Pipeline reminder */}
+          <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-center gap-2 text-xs text-gray-400">
+            <span className="px-2 py-1 bg-teal/10 text-teal rounded font-medium">1. Scout</span>
+            <ArrowRight className="h-3 w-3" />
+            <span className="px-2 py-1 bg-teal/10 text-teal rounded font-medium">2. Prospects</span>
+            <ArrowRight className="h-3 w-3" />
+            <span className="px-2 py-1 bg-teal/10 text-teal rounded font-medium">3. Campaign</span>
+          </div>
         </div>
         <div className="px-6 pb-6">
           <button

@@ -1,10 +1,18 @@
-import { useState } from 'react';
-import { MapPin, TrendingUp, Award, BarChart3, Lightbulb, CheckCircle, XCircle, Building2, Wifi, Users, Sprout } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { MapPin, TrendingUp, Award, BarChart3, Lightbulb, CheckCircle, XCircle, Building2, Wifi, Users, Sprout, PlusCircle, MinusCircle, ArrowRight } from 'lucide-react';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { markets, getGradeColour, getScoreColour } from '../data/markets';
 import type { Market } from '../types';
-import { useEffect } from 'react';
+import { PhaseHeader } from './PhaseHeader';
+import { AiBadge } from './AiBadge';
+import { TechnicalNotes } from './TechnicalNotes';
+
+interface MarketScoutProps {
+  selectedMarketIds: Set<string>;
+  onToggleMarket: (id: string) => void;
+  onNext: () => void;
+}
 
 function MapRecenter({ coords }: { coords: [number, number] | null }) {
   const map = useMap();
@@ -14,7 +22,7 @@ function MapRecenter({ coords }: { coords: [number, number] | null }) {
   return null;
 }
 
-export function MarketScout() {
+export function MarketScout({ selectedMarketIds, onToggleMarket, onNext }: MarketScoutProps) {
   const [selectedMarket, setSelectedMarket] = useState<Market | null>(null);
   const [centreCoords, setCentreCoords] = useState<[number, number] | null>(null);
 
@@ -35,121 +43,221 @@ export function MarketScout() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <KPICard icon={<MapPin className="h-5 w-5 text-teal" />} label="Markets Analysed" value={markets.length.toString()} />
-        <KPICard icon={<Award className="h-5 w-5 text-emerald-600" />} label="Top Market" value={topMarket.name} sub={`Score: ${topMarket.opportunityScore}`} />
-        <KPICard icon={<BarChart3 className="h-5 w-5 text-blue-600" />} label="Avg Opportunity Score" value={avgScore.toString()} sub="out of 100" />
-        <KPICard icon={<TrendingUp className="h-5 w-5 text-amber-600" />} label="Markets Grade A/B" value={gradeAB.toString()} sub={`of ${markets.length} total`} />
-      </div>
+    <div>
+      <PhaseHeader
+        phase={1}
+        title="Market Scout — Location Intelligence"
+        description="Select or search US markets to analyse. MarketScout scores each location based on business density, digital maturity gaps, competition, and growth potential. Choose your target markets to proceed to Phase 2."
+        outputNote="Selected markets flow to Phase 2 & 3"
+      >
+        <AiBadge tooltip="AI analyses business registrations, web presence data, and economic indicators to score each market's opportunity potential." />
+      </PhaseHeader>
 
-      <div className="grid lg:grid-cols-5 gap-6">
-        {/* Map */}
-        <div className="lg:col-span-3 bg-white rounded-xl border border-card-border shadow-sm overflow-hidden">
-          <div className="p-4 border-b border-card-border">
-            <h2 className="font-semibold text-navy">US Market Opportunities</h2>
-            <p className="text-xs text-gray-400 mt-0.5">Click a marker to view market details</p>
-          </div>
-          <div className="h-[450px] sm:h-[500px]">
-            <MapContainer center={[33, -96]} zoom={5} className="h-full w-full" scrollWheelZoom={true}>
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-              />
-              <MapRecenter coords={centreCoords} />
-              {markets.map((market) => (
-                <CircleMarker
-                  key={market.id}
-                  center={[market.lat, market.lng]}
-                  radius={Math.max(8, market.opportunityScore / 6)}
-                  pathOptions={{
-                    fillColor: getMarkerColour(market.opportunityScore),
-                    color: '#fff',
-                    weight: 2,
-                    fillOpacity: 0.85,
-                  }}
-                  eventHandlers={{ click: () => handleMarketClick(market) }}
-                >
-                  <Popup>
-                    <div className="text-sm min-w-[140px]">
-                      <p className="font-bold text-navy">{market.name}, {market.state}</p>
-                      <p className="text-gray-500">Score: {market.opportunityScore} · Grade {market.grade}</p>
-                    </div>
-                  </Popup>
-                </CircleMarker>
-              ))}
-            </MapContainer>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        {/* KPI Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <KPICard icon={<MapPin className="h-5 w-5 text-teal" />} label="Markets Analysed" value={markets.length.toString()} />
+          <KPICard icon={<Award className="h-5 w-5 text-emerald-600" />} label="Top Market" value={topMarket.name} sub={`Score: ${topMarket.opportunityScore}`} />
+          <KPICard icon={<BarChart3 className="h-5 w-5 text-blue-600" />} label="Avg Opportunity Score" value={avgScore.toString()} sub="out of 100" />
+          <KPICard icon={<TrendingUp className="h-5 w-5 text-amber-600" />} label="Markets Grade A/B" value={gradeAB.toString()} sub={`of ${markets.length} total`} />
         </div>
 
-        {/* Detail Panel */}
-        <div className="lg:col-span-2">
-          {selectedMarket ? (
-            <MarketDetail market={selectedMarket} />
-          ) : (
-            <div className="bg-white rounded-xl border border-card-border shadow-sm p-8 text-center">
-              <MapPin className="h-12 w-12 text-gray-200 mx-auto mb-4" />
-              <h3 className="font-medium text-gray-500 mb-1">Select a Market</h3>
-              <p className="text-sm text-gray-400">Click a pin on the map to view detailed market analysis</p>
+        {/* Selected markets banner */}
+        {selectedMarketIds.size > 0 && (
+          <div className="mb-6 bg-teal/5 border border-teal/20 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-teal">
+                {selectedMarketIds.size} market{selectedMarketIds.size !== 1 ? 's' : ''} selected for your plan
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {markets.filter((m) => selectedMarketIds.has(m.id)).map((m) => m.name).join(', ')}
+              </p>
             </div>
-          )}
-        </div>
-      </div>
+            <button
+              onClick={onNext}
+              className="flex items-center gap-2 px-4 py-2 bg-teal text-white rounded-lg text-sm font-medium hover:bg-teal-light transition-colors shrink-0"
+            >
+              Continue to Phase 2 <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
 
-      {/* Market Rankings Table */}
-      <div className="mt-6 bg-white rounded-xl border border-card-border shadow-sm overflow-hidden">
-        <div className="p-4 border-b border-card-border">
-          <h2 className="font-semibold text-navy">Market Rankings</h2>
+        <div className="grid lg:grid-cols-5 gap-6">
+          {/* Map */}
+          <div className="lg:col-span-3 bg-white rounded-xl border border-card-border shadow-sm overflow-hidden">
+            <div className="p-4 border-b border-card-border flex items-center justify-between">
+              <div>
+                <h2 className="font-semibold text-navy">US Market Opportunities</h2>
+                <p className="text-xs text-gray-400 mt-0.5">Click a marker to view details · Click "Add to Plan" to select</p>
+              </div>
+              <AiBadge label="AI Scored" tooltip="Market scores are generated by AI analysis of business density, digital maturity, competitive landscape, and economic growth indicators." />
+            </div>
+            <div className="h-[450px] sm:h-[500px]">
+              <MapContainer center={[33, -96]} zoom={5} className="h-full w-full" scrollWheelZoom={true}>
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                  url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+                />
+                <MapRecenter coords={centreCoords} />
+                {markets.map((market) => (
+                  <CircleMarker
+                    key={market.id}
+                    center={[market.lat, market.lng]}
+                    radius={Math.max(8, market.opportunityScore / 6)}
+                    pathOptions={{
+                      fillColor: selectedMarketIds.has(market.id) ? '#7c3aed' : getMarkerColour(market.opportunityScore),
+                      color: selectedMarketIds.has(market.id) ? '#7c3aed' : '#fff',
+                      weight: selectedMarketIds.has(market.id) ? 3 : 2,
+                      fillOpacity: 0.85,
+                    }}
+                    eventHandlers={{ click: () => handleMarketClick(market) }}
+                  >
+                    <Popup>
+                      <div className="text-sm min-w-[160px]">
+                        <p className="font-bold text-navy">{market.name}, {market.state}</p>
+                        <p className="text-gray-500">Score: {market.opportunityScore} · Grade {market.grade}</p>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onToggleMarket(market.id); }}
+                          className={`mt-2 w-full px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                            selectedMarketIds.has(market.id)
+                              ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                              : 'bg-teal/10 text-teal hover:bg-teal/20'
+                          }`}
+                        >
+                          {selectedMarketIds.has(market.id) ? 'Remove from Plan' : 'Add to Plan'}
+                        </button>
+                      </div>
+                    </Popup>
+                  </CircleMarker>
+                ))}
+              </MapContainer>
+            </div>
+          </div>
+
+          {/* Detail Panel */}
+          <div className="lg:col-span-2">
+            {selectedMarket ? (
+              <MarketDetail
+                market={selectedMarket}
+                isSelected={selectedMarketIds.has(selectedMarket.id)}
+                onToggle={() => onToggleMarket(selectedMarket.id)}
+              />
+            ) : (
+              <div className="bg-white rounded-xl border border-card-border shadow-sm p-8 text-center">
+                <MapPin className="h-12 w-12 text-gray-200 mx-auto mb-4" />
+                <h3 className="font-medium text-gray-500 mb-1">Select a Market</h3>
+                <p className="text-sm text-gray-400">Click a pin on the map to view detailed market analysis</p>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
-              <tr>
-                <th className="px-4 py-3 text-left">#</th>
-                <th className="px-4 py-3 text-left">Market</th>
-                <th className="px-4 py-3 text-center">Score</th>
-                <th className="px-4 py-3 text-center">Grade</th>
-                <th className="px-4 py-3 text-right hidden sm:table-cell">Businesses Needing Services</th>
-                <th className="px-4 py-3 text-right hidden md:table-cell">Avg Digital Spend</th>
-                <th className="px-4 py-3 text-center hidden lg:table-cell">Top Verticals</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {[...markets].sort((a, b) => b.opportunityScore - a.opportunityScore).map((m, i) => (
-                <tr
-                  key={m.id}
-                  className={`hover:bg-gray-50 cursor-pointer transition-colors ${selectedMarket?.id === m.id ? 'bg-teal/5' : ''}`}
-                  onClick={() => handleMarketClick(m)}
-                >
-                  <td className="px-4 py-3 font-medium text-gray-400">{i + 1}</td>
-                  <td className="px-4 py-3 font-medium text-navy">{m.name}, {m.state}</td>
-                  <td className={`px-4 py-3 text-center font-bold ${getScoreColour(m.opportunityScore)}`}>{m.opportunityScore}</td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-bold border ${getGradeColour(m.grade)}`}>
-                      {m.grade}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-right hidden sm:table-cell text-gray-600">{m.businessesNeedingServices.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-right hidden md:table-cell text-gray-600">${m.avgDigitalSpend.toLocaleString()}</td>
-                  <td className="px-4 py-3 hidden lg:table-cell">
-                    <div className="flex flex-wrap gap-1 justify-center">
-                      {m.topVerticals.slice(0, 2).map((v) => (
-                        <span key={v} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">{v}</span>
-                      ))}
-                    </div>
-                  </td>
+
+        {/* Market Rankings Table */}
+        <div className="mt-6 bg-white rounded-xl border border-card-border shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-card-border flex items-center justify-between">
+            <h2 className="font-semibold text-navy">Market Rankings</h2>
+            <AiBadge label="AI Analysis" tooltip="Competitive analysis powered by AI evaluation of agency density, market saturation, and service gap identification." />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-500 text-xs uppercase">
+                <tr>
+                  <th className="px-4 py-3 text-left w-10"></th>
+                  <th className="px-4 py-3 text-left">#</th>
+                  <th className="px-4 py-3 text-left">Market</th>
+                  <th className="px-4 py-3 text-center">Score</th>
+                  <th className="px-4 py-3 text-center">Grade</th>
+                  <th className="px-4 py-3 text-right hidden sm:table-cell">Businesses Needing Services</th>
+                  <th className="px-4 py-3 text-right hidden md:table-cell">Avg Digital Spend</th>
+                  <th className="px-4 py-3 text-center hidden lg:table-cell">Top Verticals</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {[...markets].sort((a, b) => b.opportunityScore - a.opportunityScore).map((m, i) => {
+                  const selected = selectedMarketIds.has(m.id);
+                  return (
+                    <tr
+                      key={m.id}
+                      className={`hover:bg-gray-50 cursor-pointer transition-colors ${selected ? 'bg-indigo-50/50' : ''}`}
+                      onClick={() => handleMarketClick(m)}
+                    >
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={(e) => { e.stopPropagation(); onToggleMarket(m.id); }}
+                          className={`transition-colors ${selected ? 'text-indigo-600' : 'text-gray-300 hover:text-teal'}`}
+                          title={selected ? 'Remove from plan' : 'Add to plan'}
+                        >
+                          {selected ? <MinusCircle className="h-5 w-5" /> : <PlusCircle className="h-5 w-5" />}
+                        </button>
+                      </td>
+                      <td className="px-4 py-3 font-medium text-gray-400">{i + 1}</td>
+                      <td className="px-4 py-3 font-medium text-navy">{m.name}, {m.state}</td>
+                      <td className={`px-4 py-3 text-center font-bold ${getScoreColour(m.opportunityScore)}`}>{m.opportunityScore}</td>
+                      <td className="px-4 py-3 text-center">
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold border ${getGradeColour(m.grade)}`}>{m.grade}</span>
+                      </td>
+                      <td className="px-4 py-3 text-right hidden sm:table-cell text-gray-600">{m.businessesNeedingServices.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-right hidden md:table-cell text-gray-600">${m.avgDigitalSpend.toLocaleString()}</td>
+                      <td className="px-4 py-3 hidden lg:table-cell">
+                        <div className="flex flex-wrap gap-1 justify-center">
+                          {m.topVerticals.slice(0, 2).map((v) => (
+                            <span key={v} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">{v}</span>
+                          ))}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
+
+        {/* Continue CTA */}
+        {selectedMarketIds.size > 0 && (
+          <div className="mt-6 text-center">
+            <button
+              onClick={onNext}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-teal text-white rounded-xl text-sm font-medium hover:bg-teal-light transition-colors shadow-sm"
+            >
+              Continue to Phase 2: Find Prospects <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
+        <TechnicalNotes
+          dataSources={[
+            'Google Places API for business density & verticals',
+            'BuiltWith / Wappalyzer for technology detection',
+            'SEMrush / Ahrefs APIs for SEO competitive data',
+            'US Census Bureau for economic indicators',
+            'Business registration databases (state-level)',
+          ]}
+          aiCapabilities={[
+            'ML scoring model combining 12+ market signals',
+            'NLP-generated market summaries & recommendations',
+            'Competitive landscape analysis using clustering',
+            'Trend forecasting using time-series data',
+          ]}
+          simulated={[
+            'Market opportunity scores (realistic ranges)',
+            'Business counts and digital spend figures',
+            'AI-generated summaries (pre-written)',
+            'Competitive density estimates',
+          ]}
+          production={[
+            'Live API calls to data providers',
+            'Real-time scoring model inference',
+            'Dynamic AI summary generation (LLM)',
+            'Automated data refresh cycles',
+          ]}
+        />
       </div>
     </div>
   );
 }
 
-function MarketDetail({ market }: { market: Market }) {
+function MarketDetail({ market, isSelected, onToggle }: { market: Market; isSelected: boolean; onToggle: () => void }) {
   return (
     <div className="bg-white rounded-xl border border-card-border shadow-sm overflow-hidden">
       {/* Header */}
@@ -171,13 +279,34 @@ function MarketDetail({ market }: { market: Market }) {
             </span>
           </div>
         </div>
+        {/* Add/Remove button */}
+        <button
+          onClick={onToggle}
+          className={`mt-3 w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            isSelected
+              ? 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100'
+              : 'bg-teal text-white hover:bg-teal-light'
+          }`}
+        >
+          {isSelected ? (
+            <><MinusCircle className="h-4 w-4" /> Remove from Plan</>
+          ) : (
+            <><PlusCircle className="h-4 w-4" /> Add to Plan</>
+          )}
+        </button>
       </div>
 
       {/* AI Summary */}
       <div className="p-4 bg-navy text-white">
         <div className="flex items-start gap-3">
           <Lightbulb className="h-5 w-5 mt-0.5 shrink-0 text-yellow-400" />
-          <p className="text-sm leading-relaxed text-slate-200">{market.aiSummary}</p>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-xs font-medium text-white/60">AI Market Analysis</span>
+              <AiBadge label="AI Summary" tooltip="AI-generated market analysis based on business density, digital maturity data, and competitive landscape evaluation." />
+            </div>
+            <p className="text-sm leading-relaxed text-slate-200">{market.aiSummary}</p>
+          </div>
         </div>
       </div>
 
@@ -224,11 +353,11 @@ function MarketDetail({ market }: { market: Market }) {
       <div className="p-4 border-t bg-gray-50">
         <h4 className="text-sm font-semibold text-gray-700 mb-3">Key Statistics</h4>
         <div className="grid grid-cols-2 gap-3">
-          <div className="text-centre">
+          <div>
             <p className="text-xs text-gray-400">Businesses Needing Services</p>
             <p className="font-bold text-navy">{market.businessesNeedingServices.toLocaleString()}</p>
           </div>
-          <div className="text-centre">
+          <div>
             <p className="text-xs text-gray-400">Avg Digital Spend</p>
             <p className="font-bold text-navy">${market.avgDigitalSpend.toLocaleString()}/mo</p>
           </div>

@@ -2,19 +2,21 @@ import { useState, useEffect } from 'react';
 import { Home, Map, Users, Target, HelpCircle, Menu, X } from 'lucide-react';
 import { MarketScout } from './components/MarketScout';
 import { ProspectGenerator } from './components/ProspectGenerator';
-import { AdFocusPlanner } from './components/AdFocusPlanner';
+import { CampaignPlanner } from './components/CampaignPlanner';
 import { WelcomeModal } from './components/WelcomeModal';
 import { HowItWorks } from './components/HowItWorks';
 import { HomePage } from './components/HomePage';
+import { PhaseStepper } from './components/PhaseStepper';
+import { prospects } from './data/prospects';
 import './index.css';
 
-type Page = 'home' | 'market-scout' | 'prospects' | 'ad-planner';
+type Page = 'home' | 'phase-1' | 'phase-2' | 'phase-3';
 
 const navItems: { id: Page; label: string; icon: React.ReactNode }[] = [
   { id: 'home', label: 'Home', icon: <Home className="h-5 w-5" /> },
-  { id: 'market-scout', label: 'Market Scout', icon: <Map className="h-5 w-5" /> },
-  { id: 'prospects', label: 'Prospects', icon: <Users className="h-5 w-5" /> },
-  { id: 'ad-planner', label: 'Ad Planner', icon: <Target className="h-5 w-5" /> },
+  { id: 'phase-1', label: 'Market Scout', icon: <Map className="h-5 w-5" /> },
+  { id: 'phase-2', label: 'Prospects', icon: <Users className="h-5 w-5" /> },
+  { id: 'phase-3', label: 'Campaign', icon: <Target className="h-5 w-5" /> },
 ];
 
 function App() {
@@ -23,24 +25,74 @@ function App() {
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Pipeline state — flows between phases
+  const [selectedMarketIds, setSelectedMarketIds] = useState<Set<string>>(new Set());
+  const [selectedProspectIds, setSelectedProspectIds] = useState<Set<string>>(new Set());
+  const [monthlyBudget, setMonthlyBudget] = useState(5000);
+
   useEffect(() => {
-    const visited = localStorage.getItem('websharx-marketscout-visited');
+    const visited = localStorage.getItem('websharx-ms-visited-v2');
     if (!visited) {
       setShowWelcome(true);
-      localStorage.setItem('websharx-marketscout-visited', 'true');
+      localStorage.setItem('websharx-ms-visited-v2', 'true');
     }
   }, []);
+
+  const toggleMarket = (id: string) => {
+    setSelectedMarketIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleProspect = (id: string) => {
+    setSelectedProspectIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  // Prospects available in selected markets
+  const availableProspects = prospects.filter((p) => selectedMarketIds.has(p.marketId));
+  const selectedProspects = prospects.filter((p) => selectedProspectIds.has(p.id));
 
   const renderPage = () => {
     switch (currentPage) {
       case 'home':
-        return <HomePage onNavigate={setCurrentPage} />;
-      case 'market-scout':
-        return <MarketScout />;
-      case 'prospects':
-        return <ProspectGenerator />;
-      case 'ad-planner':
-        return <AdFocusPlanner />;
+        return <HomePage onNavigate={(p) => setCurrentPage(p as Page)} />;
+      case 'phase-1':
+        return (
+          <MarketScout
+            selectedMarketIds={selectedMarketIds}
+            onToggleMarket={toggleMarket}
+            onNext={() => setCurrentPage('phase-2')}
+          />
+        );
+      case 'phase-2':
+        return (
+          <ProspectGenerator
+            selectedMarketIds={selectedMarketIds}
+            availableProspects={availableProspects}
+            selectedProspectIds={selectedProspectIds}
+            onToggleProspect={toggleProspect}
+            onBack={() => setCurrentPage('phase-1')}
+            onNext={() => setCurrentPage('phase-3')}
+          />
+        );
+      case 'phase-3':
+        return (
+          <CampaignPlanner
+            selectedMarketIds={selectedMarketIds}
+            selectedProspects={selectedProspects}
+            monthlyBudget={monthlyBudget}
+            onSetBudget={setMonthlyBudget}
+            onBack={() => setCurrentPage('phase-2')}
+          />
+        );
     }
   };
 
@@ -101,14 +153,9 @@ function App() {
             {navItems.map((item) => (
               <button
                 key={item.id}
-                onClick={() => {
-                  setCurrentPage(item.id);
-                  setMobileMenuOpen(false);
-                }}
+                onClick={() => { setCurrentPage(item.id); setMobileMenuOpen(false); }}
                 className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                  currentPage === item.id
-                    ? 'bg-teal/10 text-teal'
-                    : 'text-gray-600 hover:bg-gray-50'
+                  currentPage === item.id ? 'bg-teal/10 text-teal' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 {item.icon}
@@ -116,16 +163,23 @@ function App() {
               </button>
             ))}
             <button
-              onClick={() => {
-                setShowHowItWorks(true);
-                setMobileMenuOpen(false);
-              }}
+              onClick={() => { setShowHowItWorks(true); setMobileMenuOpen(false); }}
               className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-50"
             >
-              <HelpCircle className="h-5 w-5" />
-              How It Works
+              <HelpCircle className="h-5 w-5" /> How It Works
             </button>
           </div>
+        )}
+
+        {/* Phase Stepper — only on phase pages */}
+        {currentPage !== 'home' && (
+          <PhaseStepper
+            currentPhase={currentPage}
+            onNavigate={(p) => setCurrentPage(p as Page)}
+            marketCount={selectedMarketIds.size}
+            prospectCount={availableProspects.length}
+            selectedProspectCount={selectedProspectIds.size}
+          />
         )}
       </header>
 
@@ -133,7 +187,7 @@ function App() {
       <main className="flex-1">{renderPage()}</main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-card-border py-4 px-4 text-centre">
+      <footer className="bg-white border-t border-card-border py-4 px-4">
         <p className="text-xs text-gray-400 text-center">
           © 2026 Web Sharx. All rights reserved. Proof of concept prototype by{' '}
           <a href="https://buildwithgloo.com" target="_blank" rel="noopener noreferrer" className="text-teal hover:underline">
@@ -147,7 +201,7 @@ function App() {
       </footer>
 
       {/* Modals */}
-      {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} onNavigate={setCurrentPage} />}
+      {showWelcome && <WelcomeModal onClose={() => setShowWelcome(false)} onStart={() => { setShowWelcome(false); setCurrentPage('phase-1'); }} />}
       {showHowItWorks && <HowItWorks page={currentPage} onClose={() => setShowHowItWorks(false)} />}
     </div>
   );
