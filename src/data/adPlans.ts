@@ -1,0 +1,118 @@
+import type { AdPlan } from '../types';
+
+export const adPlans: AdPlan[] = [
+  {
+    marketId: 'houston',
+    marketName: 'Houston, TX',
+    budgetAllocation: 25,
+    costPerLead: 42,
+    estimatedLeads: 148,
+    roiProjection: 340,
+    channels: [
+      { channel: 'Google Ads', allocation: 45, estimatedCpl: 38, estimatedLeads: 72, priority: 'high' },
+      { channel: 'LinkedIn Ads', allocation: 25, estimatedCpl: 55, estimatedLeads: 28, priority: 'high' },
+      { channel: 'Local Directories', allocation: 15, estimatedCpl: 28, estimatedLeads: 33, priority: 'medium' },
+      { channel: 'Facebook/Instagram', allocation: 15, estimatedCpl: 35, estimatedLeads: 26, priority: 'medium' },
+    ],
+  },
+  {
+    marketId: 'dallas',
+    marketName: 'Dallas, TX',
+    budgetAllocation: 22,
+    costPerLead: 48,
+    estimatedLeads: 114,
+    roiProjection: 310,
+    channels: [
+      { channel: 'Google Ads', allocation: 40, estimatedCpl: 44, estimatedLeads: 50, priority: 'high' },
+      { channel: 'LinkedIn Ads', allocation: 30, estimatedCpl: 58, estimatedLeads: 28, priority: 'high' },
+      { channel: 'Local Directories', allocation: 15, estimatedCpl: 32, estimatedLeads: 26, priority: 'medium' },
+      { channel: 'Facebook/Instagram', allocation: 15, estimatedCpl: 40, estimatedLeads: 20, priority: 'medium' },
+    ],
+  },
+  {
+    marketId: 'austin',
+    marketName: 'Austin, TX',
+    budgetAllocation: 15,
+    costPerLead: 55,
+    estimatedLeads: 68,
+    roiProjection: 290,
+    channels: [
+      { channel: 'Google Ads', allocation: 35, estimatedCpl: 52, estimatedLeads: 26, priority: 'high' },
+      { channel: 'LinkedIn Ads', allocation: 30, estimatedCpl: 62, estimatedLeads: 19, priority: 'medium' },
+      { channel: 'Local Directories', allocation: 15, estimatedCpl: 35, estimatedLeads: 17, priority: 'medium' },
+      { channel: 'Facebook/Instagram', allocation: 20, estimatedCpl: 45, estimatedLeads: 17, priority: 'medium' },
+    ],
+  },
+  {
+    marketId: 'san-antonio',
+    marketName: 'San Antonio, TX',
+    budgetAllocation: 12,
+    costPerLead: 35,
+    estimatedLeads: 86,
+    roiProjection: 380,
+    channels: [
+      { channel: 'Google Ads', allocation: 40, estimatedCpl: 30, estimatedLeads: 40, priority: 'high' },
+      { channel: 'Local Directories', allocation: 25, estimatedCpl: 22, estimatedLeads: 34, priority: 'high' },
+      { channel: 'Facebook/Instagram', allocation: 20, estimatedCpl: 28, estimatedLeads: 21, priority: 'medium' },
+      { channel: 'LinkedIn Ads', allocation: 15, estimatedCpl: 52, estimatedLeads: 9, priority: 'low' },
+    ],
+  },
+  {
+    marketId: 'fort-worth',
+    marketName: 'Fort Worth, TX',
+    budgetAllocation: 8,
+    costPerLead: 38,
+    estimatedLeads: 52,
+    roiProjection: 350,
+    channels: [
+      { channel: 'Google Ads', allocation: 45, estimatedCpl: 34, estimatedLeads: 27, priority: 'high' },
+      { channel: 'Local Directories', allocation: 25, estimatedCpl: 25, estimatedLeads: 20, priority: 'high' },
+      { channel: 'Facebook/Instagram', allocation: 20, estimatedCpl: 30, estimatedLeads: 14, priority: 'medium' },
+      { channel: 'LinkedIn Ads', allocation: 10, estimatedCpl: 50, estimatedLeads: 4, priority: 'low' },
+    ],
+  },
+  {
+    marketId: 'phoenix',
+    marketName: 'Phoenix, AZ',
+    budgetAllocation: 8,
+    costPerLead: 45,
+    estimatedLeads: 44,
+    roiProjection: 280,
+    channels: [
+      { channel: 'Google Ads', allocation: 45, estimatedCpl: 42, estimatedLeads: 21, priority: 'high' },
+      { channel: 'LinkedIn Ads', allocation: 25, estimatedCpl: 55, estimatedLeads: 9, priority: 'medium' },
+      { channel: 'Local Directories', allocation: 15, estimatedCpl: 30, estimatedLeads: 10, priority: 'medium' },
+      { channel: 'Facebook/Instagram', allocation: 15, estimatedCpl: 38, estimatedLeads: 8, priority: 'medium' },
+    ],
+  },
+  {
+    marketId: 'miami',
+    marketName: 'Miami, FL',
+    budgetAllocation: 5,
+    costPerLead: 62,
+    estimatedLeads: 20,
+    roiProjection: 240,
+    channels: [
+      { channel: 'Google Ads', allocation: 40, estimatedCpl: 58, estimatedLeads: 9, priority: 'medium' },
+      { channel: 'LinkedIn Ads', allocation: 30, estimatedCpl: 68, estimatedLeads: 5, priority: 'medium' },
+      { channel: 'Facebook/Instagram', allocation: 20, estimatedCpl: 50, estimatedLeads: 5, priority: 'medium' },
+      { channel: 'Local Directories', allocation: 10, estimatedCpl: 45, estimatedLeads: 3, priority: 'low' },
+    ],
+  },
+  {
+    marketId: 'atlanta',
+    marketName: 'Atlanta, GA',
+    budgetAllocation: 5,
+    costPerLead: 52,
+    estimatedLeads: 24,
+    roiProjection: 260,
+    channels: [
+      { channel: 'Google Ads', allocation: 40, estimatedCpl: 48, estimatedLeads: 10, priority: 'high' },
+      { channel: 'LinkedIn Ads', allocation: 30, estimatedCpl: 60, estimatedLeads: 6, priority: 'medium' },
+      { channel: 'Local Directories', allocation: 15, estimatedCpl: 35, estimatedLeads: 5, priority: 'medium' },
+      { channel: 'Facebook/Instagram', allocation: 15, estimatedCpl: 42, estimatedLeads: 4, priority: 'medium' },
+    ],
+  },
+];
+
+export const totalMonthlyBudget = 25000;
