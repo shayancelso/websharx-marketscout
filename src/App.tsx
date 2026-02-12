@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Home, Map, Users, Target, HelpCircle, Menu, X } from 'lucide-react';
+import { Home, Map, Users, Target, Archive, HelpCircle, Menu, X } from 'lucide-react';
 import { MarketScout } from './components/MarketScout';
 import { ProspectGenerator } from './components/ProspectGenerator';
 import { CampaignPlanner } from './components/CampaignPlanner';
+import { Repository } from './components/Repository';
 import { WelcomeModal } from './components/WelcomeModal';
 import { HowItWorks } from './components/HowItWorks';
 import { HomePage } from './components/HomePage';
@@ -10,13 +11,14 @@ import { PhaseStepper } from './components/PhaseStepper';
 import { prospects } from './data/prospects';
 import './index.css';
 
-type Page = 'home' | 'phase-1' | 'phase-2' | 'phase-3';
+type Page = 'home' | 'phase-1' | 'phase-2' | 'phase-3' | 'repository';
 
 const navItems: { id: Page; label: string; icon: React.ReactNode }[] = [
   { id: 'home', label: 'Home', icon: <Home className="h-5 w-5" /> },
   { id: 'phase-1', label: 'Market Scout', icon: <Map className="h-5 w-5" /> },
   { id: 'phase-2', label: 'Prospects', icon: <Users className="h-5 w-5" /> },
   { id: 'phase-3', label: 'Campaign', icon: <Target className="h-5 w-5" /> },
+  { id: 'repository', label: 'Repository', icon: <Archive className="h-5 w-5" /> },
 ];
 
 function App() {
@@ -91,6 +93,8 @@ function App() {
             onBack={() => setCurrentPage('phase-2')}
           />
         );
+      case 'repository':
+        return <Repository />;
     }
   };
 
@@ -170,7 +174,7 @@ function App() {
         )}
 
         {/* Phase Stepper */}
-        {currentPage !== 'home' && (
+        {currentPage !== 'home' && currentPage !== 'repository' && (
           <PhaseStepper
             currentPhase={currentPage}
             onNavigate={(p) => setCurrentPage(p as Page)}

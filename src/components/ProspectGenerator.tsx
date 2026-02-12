@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Users, Target, DollarSign, Star, Search, Filter, X, Globe, ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, CheckSquare, Square } from 'lucide-react';
+import { Users, Target, DollarSign, Star, Search, Filter, X, Globe, ArrowLeft, ArrowRight, CheckCircle, AlertTriangle, CheckSquare, Square, ChevronDown, ChevronUp, Brain, Database, Info, Check } from 'lucide-react';
 import type { Prospect } from '../types';
 import { markets } from '../data/markets';
 import { PhaseHeader } from './PhaseHeader';
@@ -121,6 +121,42 @@ export function ProspectGenerator({
             <p className="text-sm text-[#86868b]">Multi-location franchise · Full-service digital client · Website, SEO, PPC, Social, Content, Video</p>
           </div>
         </div>
+
+        {/* AI Training Input Panel */}
+        <AiTrainingInputPanel />
+
+        {/* Limited Results Banner */}
+        {(() => {
+          const marketList = markets.filter(m => selectedMarketIds.has(m.id));
+          const banners = marketList.filter(m => {
+            const count = availableProspects.filter(p => p.marketId === m.id).length;
+            return count <= 3;
+          });
+          if (banners.length === 0) return null;
+          return (
+            <div className="space-y-3 mb-8">
+              {banners.map(m => {
+                const count = availableProspects.filter(p => p.marketId === m.id).length;
+                return (
+                  <div key={m.id} className="glass-card-static p-4 flex items-start gap-3" style={{ borderLeft: '3px solid rgba(0,85,212,0.3)' }}>
+                    <Info className="h-5 w-5 text-[#0055d4] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-[#1d1d1f]">
+                        Showing {count} verified prospect{count !== 1 ? 's' : ''} for {m.name}
+                      </p>
+                      <p className="text-xs text-[#86868b] mt-1">
+                        In production, AI would scan 1,000+ businesses in this market using web crawlers, business directories, and SEO audits. These examples demonstrate the selection criteria and scoring methodology.
+                      </p>
+                      <p className="text-xs text-teal font-medium mt-1.5">
+                        Estimated {m.businessesNeedingServices.toLocaleString()} businesses match initial criteria — {count} shown as verified examples
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* KPIs */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
@@ -354,6 +390,9 @@ function ProspectDetail({ prospect, isSelected, onToggle, onBack }: { prospect: 
           <span className="text-xl font-light text-[#1d1d1f]">${prospect.estimatedProjectValue.toLocaleString()}</span>
         </div>
 
+        {/* Why This Prospect */}
+        <WhyThisProspect prospect={prospect} />
+
         {/* Digital Gaps */}
         <div className="px-6 pb-6 border-b border-[#1d1d1f]/6">
           <div className="flex items-center gap-2 mb-3">
@@ -389,6 +428,192 @@ function ProspectDetail({ prospect, isSelected, onToggle, onBack }: { prospect: 
             <span className={`px-3 py-1 rounded-full text-sm font-medium capitalize ${statusStyles[prospect.status]}`}>{prospect.status}</span>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function generateSelectionCriteria(p: Prospect): string[] {
+  if (p.selectionCriteria) return p.selectionCriteria;
+  const criteria: string[] = [];
+  criteria.push(`${p.industry} sector — target vertical for Web Sharx`);
+  criteria.push(`${p.employees} employees — ideal company size range`);
+  if (p.digitalScore <= 35) criteria.push(`Digital score ${p.digitalScore}/100 — significant gaps indicate high need`);
+  else criteria.push(`Digital score ${p.digitalScore}/100 — room for improvement`);
+  if (p.digitalGaps.length > 0) criteria.push(p.digitalGaps[0]);
+  criteria.push(`${p.revenue} revenue — sufficient budget potential`);
+  return criteria;
+}
+
+function generateBssMatch(p: Prospect): { label: string; match: boolean }[] {
+  if (p.bssMatch) return p.bssMatch;
+  return [
+    { label: 'Service-based', match: true },
+    { label: 'Multiple locations', match: p.employees !== '5-10' },
+    { label: 'Growth-stage', match: p.matchScore >= 80 },
+    { label: 'Digital gaps present', match: p.digitalScore <= 50 },
+    { label: 'Franchise model', match: p.industry === 'Franchises' },
+  ];
+}
+
+function generateAiConfidence(p: Prospect): { score: number; reason: string } {
+  if (p.aiConfidence && p.aiConfidenceReason) return { score: p.aiConfidence, reason: p.aiConfidenceReason };
+  const score = Math.min(98, Math.round(p.matchScore * 1.02 + (50 - p.digitalScore) * 0.1));
+  let reason = '';
+  if (score >= 90) reason = `High alignment with BSS profile. ${p.industry} vertical with significant digital gaps and appropriate company size.`;
+  else if (score >= 80) reason = `Good alignment with BSS profile. Strong potential in ${p.industry} vertical, though some attributes differ from ideal client.`;
+  else reason = `Moderate alignment. Worth pursuing for ${p.industry} vertical expertise but lower priority than higher-scoring prospects.`;
+  return { score, reason };
+}
+
+function WhyThisProspect({ prospect }: { prospect: Prospect }) {
+  const [expanded, setExpanded] = useState(true);
+  const criteria = generateSelectionCriteria(prospect);
+  const bssMatch = generateBssMatch(prospect);
+  const confidence = generateAiConfidence(prospect);
+
+  return (
+    <div className="px-6 pb-6 border-b border-[#1d1d1f]/6">
+      <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-2 mb-3 w-full text-left">
+        <Brain className="h-4 w-4 text-teal" />
+        <h3 className="font-semibold text-[#1d1d1f] flex-1">Why This Prospect</h3>
+        <AiBadge label="AI Selection" tooltip="AI evaluated this prospect against multiple data signals and the ideal client profile." />
+        {expanded ? <ChevronUp className="h-4 w-4 text-[#86868b]" /> : <ChevronDown className="h-4 w-4 text-[#86868b]" />}
+      </button>
+      {expanded && (
+        <div className="space-y-4">
+          {/* Selection Criteria */}
+          <div>
+            <p className="text-[10px] text-[#86868b] uppercase tracking-wider font-medium mb-2">Selection Criteria</p>
+            <div className="space-y-1.5">
+              {criteria.map((c, i) => (
+                <div key={i} className="flex items-start gap-2 text-sm text-[#1d1d1f]/80">
+                  <Check className="h-3.5 w-3.5 text-teal shrink-0 mt-0.5" />
+                  <span>{c}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* BSS Match */}
+          <div>
+            <p className="text-[10px] text-[#86868b] uppercase tracking-wider font-medium mb-2">Match to Ideal Client (BSS)</p>
+            <div className="flex flex-wrap gap-2">
+              {bssMatch.map((b, i) => (
+                <span key={i} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                  b.match ? 'bg-[#248a3d]/10 text-[#248a3d]' : 'bg-[#1d1d1f]/6 text-[#86868b]'
+                }`}>
+                  {b.match ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                  {b.label}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* AI Confidence */}
+          <div className="p-3 rounded-xl bg-teal/5">
+            <div className="flex items-center justify-between mb-1">
+              <p className="text-xs font-medium text-teal">AI Confidence Score</p>
+              <span className="text-lg font-light text-[#1d1d1f]">{confidence.score}%</span>
+            </div>
+            <div className="h-1.5 bg-[#1d1d1f]/6 rounded-full overflow-hidden mb-2">
+              <div className="h-full bg-teal rounded-full" style={{ width: `${confidence.score}%` }} />
+            </div>
+            <p className="text-xs text-[#86868b]">{confidence.reason}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function AiTrainingInputPanel() {
+  const [expanded, setExpanded] = useState(false);
+
+  const sampleData = {
+    business_directory: {
+      name: "Gulf Coast Family Medicine",
+      industry: "Healthcare",
+      sub_category: "Family Practice",
+      employees: "25-50",
+      locations: 3,
+      city: "Houston",
+      state: "TX",
+      years_in_business: 12
+    },
+    website_audit: {
+      mobile_score: 22,
+      page_load_time_ms: 4800,
+      seo_rank: "Not ranked (top 100)",
+      last_updated: "2018-06-14",
+      has_ssl: true,
+      has_blog: false,
+      has_booking: false,
+      accessibility_score: 31
+    },
+    social_presence: {
+      facebook_followers: 340,
+      instagram_followers: 0,
+      linkedin_followers: 45,
+      posting_frequency: "2x/month",
+      estimated_ad_spend: "$0/month",
+      google_reviews: 28,
+      avg_rating: 4.2
+    },
+    competitive_positioning: {
+      market_share_estimate: "2.1%",
+      growth_trajectory: "stable",
+      competitors_with_modern_sites: "78%",
+      digital_spend_vs_peers: "bottom 15%"
+    }
+  };
+
+  return (
+    <div className="glass-card-static mb-8 overflow-hidden">
+      <button onClick={() => setExpanded(!expanded)} className="w-full p-5 flex items-center gap-3 text-left">
+        <div className="w-9 h-9 rounded-xl bg-[#af52de]/10 flex items-center justify-center shrink-0">
+          <Database className="h-5 w-5 text-[#af52de]" />
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center gap-2">
+            <p className="font-semibold text-[#1d1d1f] text-sm">Example Input for AI Prospect Scoring Model</p>
+            <AiBadge label="Training Data" tooltip="This shows the types of data the AI model ingests to score and rank prospects." />
+          </div>
+          <p className="text-xs text-[#86868b] mt-0.5">See what data the AI analyses for each prospect</p>
+        </div>
+        {expanded ? <ChevronUp className="h-5 w-5 text-[#86868b]" /> : <ChevronDown className="h-5 w-5 text-[#86868b]" />}
+      </button>
+      {expanded && (
+        <div className="px-5 pb-5 border-t border-[#1d1d1f]/6 pt-4">
+          <div className="grid sm:grid-cols-2 gap-4 mb-4">
+            <DataCategory title="Business Directory Data" icon={<Database className="h-3.5 w-3.5" />} items={['Name, industry, sub-category', 'Employee count & location count', 'City, state, years in business', 'Revenue estimates']} />
+            <DataCategory title="Website Audit Results" icon={<Globe className="h-3.5 w-3.5" />} items={['Mobile score & page load time', 'SEO rank & last update date', 'SSL, blog, booking presence', 'Accessibility score']} />
+            <DataCategory title="Social Presence" icon={<Users className="h-3.5 w-3.5" />} items={['Follower counts across platforms', 'Posting frequency', 'Estimated ad spend signals', 'Review count & average rating']} />
+            <DataCategory title="Competitive Positioning" icon={<Target className="h-3.5 w-3.5" />} items={['Market share estimate', 'Growth trajectory', 'Competitors with modern sites', 'Digital spend vs. peers']} />
+          </div>
+          <div className="rounded-xl bg-[#1d1d1f] p-4 overflow-x-auto">
+            <p className="text-[10px] text-white/40 uppercase tracking-wider font-medium mb-2">Sample Scoring Input (JSON)</p>
+            <pre className="text-xs text-white/70 font-mono leading-relaxed">{JSON.stringify(sampleData, null, 2)}</pre>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DataCategory({ title, icon, items }: { title: string; icon: React.ReactNode; items: string[] }) {
+  return (
+    <div className="p-3 rounded-xl bg-[#1d1d1f]/3">
+      <div className="flex items-center gap-2 mb-2 text-[#1d1d1f]">
+        {icon}
+        <p className="text-xs font-semibold">{title}</p>
+      </div>
+      <div className="space-y-1">
+        {items.map((item, i) => (
+          <p key={i} className="text-xs text-[#86868b] flex items-start gap-1.5">
+            <span className="text-teal mt-0.5">·</span> {item}
+          </p>
+        ))}
       </div>
     </div>
   );

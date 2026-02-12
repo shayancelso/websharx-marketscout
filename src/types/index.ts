@@ -37,6 +37,10 @@ export interface Prospect {
   estimatedProjectValue: number;
   contactName: string;
   contactTitle: string;
+  selectionCriteria?: string[];
+  bssMatch?: { label: string; match: boolean }[];
+  aiConfidence?: number;
+  aiConfidenceReason?: string;
 }
 
 export interface AdPlan {
